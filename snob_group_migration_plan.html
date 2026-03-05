@@ -1,0 +1,1506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Snob Group Platform Migration Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Italiana&family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    themeVariables: {
+      primaryColor: '#A58536',
+      primaryTextColor: '#241818',
+      primaryBorderColor: '#A5853666',
+      lineColor: '#A58536',
+      secondaryColor: '#1E1111',
+      tertiaryColor: '#2d1e1e',
+      background: '#241818',
+      mainBkg: '#2d1e1e',
+      nodeBorder: '#A58536',
+      clusterBkg: '#1E111199',
+      clusterBorder: '#A5853644',
+      titleColor: '#E1E0D9',
+      edgeLabelBackground: '#241818',
+      textColor: '#E1E0D9',
+      nodeTextColor: '#E1E0D9',
+      actorTextColor: '#E1E0D9',
+      labelTextColor: '#E1E0D9',
+      loopTextColor: '#E1E0D9',
+      noteBkgColor: '#2d1e1e',
+      noteTextColor: '#E1E0D9',
+      noteBorderColor: '#A58536',
+      entityBorder: '#A58536',
+      attributeBackgroundColorOdd: '#2d1e1e',
+      attributeBackgroundColorEven: '#241818'
+    },
+    flowchart: { curve: 'basis', padding: 20 },
+    er: { useMaxWidth: true }
+  });
+</script>
+<style>
+  :root {
+    --primary: #241818;
+    --secondary: #A58536;
+    --text: #E1E0D9;
+    --accent: #FFFFFF;
+    --hunter: #355E3B;
+    --hunter-dim: #355E3B66;
+    --hunter-dark: #2a4a2f;
+    --surface: #2d1e1e;
+    --surface-2: #3a2a2a;
+    --overlay-1: #1E111199;
+    --overlay-2: #1E1111D9;
+    --border: #FFFFFF26;
+    --gold-dim: #A5853666;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Lato', sans-serif;
+    background-color: var(--primary);
+    color: var(--text);
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  .header {
+    background: linear-gradient(135deg, var(--primary) 0%, #1a0f0f 100%);
+    border-bottom: 1px solid var(--secondary);
+    padding: 60px 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(ellipse at 30% 50%, var(--hunter-dim) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 50%, var(--gold-dim) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  .header-badge {
+    display: inline-block;
+    font-family: 'Lato', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--hunter);
+    border: 1px solid var(--hunter);
+    padding: 6px 20px;
+    margin-bottom: 30px;
+    position: relative;
+    border-radius: 2px;
+  }
+
+  .header h1 {
+    font-family: 'Italiana', serif;
+    font-size: 52px;
+    font-weight: 400;
+    color: var(--accent);
+    letter-spacing: 2px;
+    margin-bottom: 16px;
+    position: relative;
+  }
+
+  .header .subtitle {
+    font-size: 18px;
+    color: var(--text);
+    max-width: 800px;
+    margin: 0 auto 30px;
+    opacity: 0.85;
+    position: relative;
+  }
+
+  .header .meta {
+    font-size: 13px;
+    color: var(--text);
+    letter-spacing: 1px;
+    position: relative;
+  }
+
+  .header .meta-divider { color: var(--hunter); }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+
+  .gold-rule {
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--hunter), var(--secondary), var(--hunter), transparent);
+    margin: 60px 0;
+  }
+
+  section {
+    padding: 60px 0;
+  }
+
+  h2 {
+    font-family: 'Italiana', serif;
+    font-size: 36px;
+    font-weight: 400;
+    color: var(--accent);
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+
+  h2 .section-number {
+    color: var(--hunter);
+    font-family: 'Lato', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  h3 {
+    font-family: 'Italiana', serif;
+    font-size: 24px;
+    font-weight: 400;
+    color: var(--secondary);
+    margin: 40px 0 16px;
+    letter-spacing: 0.5px;
+  }
+
+  h4 {
+    font-family: 'Lato', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin: 30px 0 12px;
+  }
+
+  p { margin-bottom: 16px; }
+
+  strong { color: var(--accent); font-weight: 700; }
+
+  ul, ol {
+    margin: 12px 0 20px 24px;
+  }
+
+  li {
+    margin-bottom: 8px;
+    padding-left: 4px;
+  }
+
+  li::marker { color: var(--secondary); }
+
+  ul ul { margin-top: 8px; margin-bottom: 8px; }
+
+  a { color: var(--secondary); text-decoration: none; border-bottom: 1px solid var(--gold-dim); }
+  a:hover { color: var(--accent); border-color: var(--accent); }
+
+  code {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    background: var(--surface);
+    color: var(--secondary);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 14px;
+    border: 1px solid var(--border);
+  }
+
+  .info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 24px 0;
+  }
+
+  @media (max-width: 768px) {
+    .info-grid { grid-template-columns: 1fr; }
+    .header h1 { font-size: 36px; }
+    .container { padding: 0 20px; }
+    table { font-size: 13px; }
+  }
+
+  .info-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px 24px;
+  }
+
+  .info-card .label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--secondary);
+    margin-bottom: 6px;
+  }
+
+  .info-card .value {
+    font-size: 15px;
+    color: var(--text);
+  }
+
+  .tech-stack-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    margin: 24px 0;
+  }
+
+  .tech-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--hunter);
+    border-radius: 0 8px 8px 0;
+    padding: 20px 24px;
+  }
+
+  .tech-card .tech-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--secondary);
+    margin-bottom: 8px;
+  }
+
+  .tech-card .tech-value {
+    font-size: 15px;
+    color: var(--text);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0 30px;
+    font-size: 14px;
+  }
+
+  thead th {
+    font-family: 'Lato', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    text-align: left;
+    padding: 14px 16px;
+    border-bottom: 2px solid var(--hunter);
+    background: var(--hunter-dark);
+  }
+
+  tbody td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+
+  tbody tr:hover { background: var(--surface); }
+
+  tbody td:first-child { color: var(--accent); font-weight: 400; }
+
+  .mermaid-wrapper {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 30px;
+    margin: 24px 0;
+    overflow-x: auto;
+  }
+
+  .phase-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 28px 32px;
+    margin: 20px 0;
+    position: relative;
+  }
+
+  .phase-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, var(--hunter), var(--secondary));
+    border-radius: 8px 0 0 8px;
+  }
+
+  .phase-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .phase-title {
+    font-family: 'Italiana', serif;
+    font-size: 22px;
+    color: var(--accent);
+  }
+
+  .phase-weeks {
+    font-family: 'Lato', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--hunter);
+    padding: 3px 12px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+
+  .phase-card ul { margin-left: 20px; }
+
+  .feature-list {
+    list-style: none;
+    margin: 16px 0;
+    padding: 0;
+  }
+
+  .feature-list li {
+    padding: 10px 0 10px 28px;
+    position: relative;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .feature-list li:last-child { border-bottom: none; }
+
+  .feature-list li::before {
+    content: '\2666';
+    position: absolute;
+    left: 0;
+    color: var(--hunter);
+    font-size: 10px;
+    top: 14px;
+  }
+
+  .security-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 24px 0;
+  }
+
+  @media (max-width: 768px) {
+    .security-grid { grid-template-columns: 1fr; }
+  }
+
+  .security-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+  }
+
+  .security-item {
+    border-top: 2px solid var(--hunter);
+  }
+
+  .security-item .sec-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--hunter);
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .security-item .sec-desc {
+    font-size: 13px;
+    color: var(--text);
+    opacity: 0.8;
+  }
+
+  .project-tree {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 28px 32px;
+    margin: 24px 0;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 13px;
+    line-height: 1.9;
+    overflow-x: auto;
+    white-space: pre;
+    color: var(--text);
+  }
+
+  .project-tree .dir { color: var(--hunter); font-weight: 700; }
+  .project-tree .dir:first-child { color: var(--secondary); }
+  .project-tree .comment { color: #E1E0D966; font-style: italic; }
+
+  .footer {
+    text-align: center;
+    padding: 50px 40px;
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+  }
+
+  .footer {
+    background: linear-gradient(180deg, var(--primary) 0%, var(--hunter-dark) 100%);
+  }
+
+  .footer .logo-text {
+    font-family: 'Italiana', serif;
+    font-size: 28px;
+    color: var(--secondary);
+    margin-bottom: 12px;
+  }
+
+  .footer p {
+    font-size: 13px;
+    color: var(--text);
+    opacity: 0.5;
+  }
+
+  .toc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 32px 40px;
+    margin: 40px 0;
+  }
+
+  .toc {
+    border-left: 3px solid var(--hunter);
+  }
+
+  .toc h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: var(--accent);
+    font-size: 20px;
+  }
+
+  .toc ol {
+    list-style: none;
+    counter-reset: toc;
+    margin: 0;
+    padding: 0;
+    columns: 2;
+    column-gap: 40px;
+  }
+
+  @media (max-width: 768px) {
+    .toc ol { columns: 1; }
+  }
+
+  .toc li {
+    counter-increment: toc;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    break-inside: avoid;
+  }
+
+  .toc li::before {
+    content: '0' counter(toc);
+    font-weight: 700;
+    color: var(--hunter);
+    margin-right: 12px;
+    font-size: 12px;
+    letter-spacing: 1px;
+  }
+
+  .toc li:nth-child(n+10)::before { content: counter(toc); }
+
+  .toc a { border-bottom: none; color: var(--text); }
+  .toc a:hover { color: var(--secondary); }
+
+  .highlight { color: var(--secondary); font-weight: 700; }
+
+  .new-badge {
+    display: inline-block;
+    background: var(--hunter);
+    color: var(--accent);
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    padding: 2px 8px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    vertical-align: middle;
+    margin-left: 6px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-badge">Confidential Technical Plan</div>
+  <h1>Snob Group</h1>
+  <p class="subtitle">Platform Migration &amp; Modernization Plan &mdash; Full-stack rebuild from WordPress/WooCommerce to a modern API-first architecture with LMS, Admin Portal, and Mass SMS capabilities.</p>
+  <p class="meta">thesnobgroup.com <span class="meta-divider">&nbsp;&bull;&nbsp;</span> March 2026 <span class="meta-divider">&nbsp;&bull;&nbsp;</span> 24-Week Delivery</p>
+</div>
+
+<div class="container">
+
+  <nav class="toc">
+    <h3>Table of Contents</h3>
+    <ol>
+      <li><a href="#current-site">Current Site Analysis</a></li>
+      <li><a href="#architecture">Target Architecture</a></li>
+      <li><a href="#tech-stack">Tech Stack</a></li>
+      <li><a href="#database">Database Schema</a></li>
+      <li><a href="#feature-parity">Feature Parity Mapping</a></li>
+      <li><a href="#lms">LMS Module Design</a></li>
+      <li><a href="#admin-portal">Admin Portal Design</a></li>
+      <li><a href="#sms">Mass SMS Campaign System</a></li>
+      <li><a href="#security">Security Hardening</a></li>
+      <li><a href="#migration">Migration Strategy (10 Phases)</a></li>
+      <li><a href="#project-structure">Project Structure</a></li>
+    </ol>
+  </nav>
+
+  <!-- ============================================ -->
+  <!-- SECTION 1: CURRENT SITE -->
+  <!-- ============================================ -->
+  <section id="current-site">
+    <h2><span class="section-number">Section 01</span>Current Site Summary</h2>
+    <p>Analysis of the existing WordPress installation at <strong>thesnobgroup.com</strong>, hosted on SiteGround.</p>
+
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="label">Active Theme</div>
+        <div class="value">"Snob Group" &mdash; child of Hello Elementor, built by Creative Analytics</div>
+      </div>
+      <div class="info-card">
+        <div class="label">Page Builder</div>
+        <div class="value">Elementor + Elementor Pro (all layouts Elementor-built)</div>
+      </div>
+      <div class="info-card">
+        <div class="label">E-Commerce</div>
+        <div class="value">WooCommerce 10.4.4 (HPOS), Stripe Gateway, WooPayments, Subscriptions, Memberships, TeraWallet, Dynamic Pricing, Conditional Fees</div>
+      </div>
+      <div class="info-card">
+        <div class="label">Booking &amp; Events</div>
+        <div class="value">Booking Calendar (My Account integration), Stachethemes Event Calendar</div>
+      </div>
+      <div class="info-card">
+        <div class="label">Communications</div>
+        <div class="value">MailPoet newsletters, WP SMS (2FA/OTP)</div>
+      </div>
+      <div class="info-card">
+        <div class="label">SEO &amp; Analytics</div>
+        <div class="value">Rank Math SEO, Google Site Kit, GTM (GTM-WZHPTK8Z)</div>
+      </div>
+      <div class="info-card">
+        <div class="label">Authentication</div>
+        <div class="value">Social login (Google, Apple, Microsoft), SMS-based 2FA/OTP</div>
+      </div>
+      <div class="info-card">
+        <div class="label">Users &amp; Roles</div>
+        <div class="value">528 users, 14 roles (admin, editor, customer, shop_manager, GFB Staff, GFB Customer, SEO Manager, SureCart roles)</div>
+      </div>
+      <div class="info-card">
+        <div class="label">Hosting &amp; Database</div>
+        <div class="value">SiteGround, MySQL 8.4, table prefix <code>agh_</code>, UpdraftPlus backups</div>
+      </div>
+      <div class="info-card">
+        <div class="label">Custom Code</div>
+        <div class="value">GTM injection, product category images (Suit/Shoe/Snip Snob), booking endpoints in My Account, wallet auto-top-up on SKU SG-SUIT-006</div>
+      </div>
+    </div>
+
+    <h4>Active Plugins (32)</h4>
+    <p>Admin Site Enhancements, Advanced Database Cleaner, Advanced Dynamic Pricing, Booking Calendar, ClickFunnels, Code Snippets, Conditional Extra Fees, Elementor, Elementor Pro, Envato Elements, Google Site Kit, MailPoet, Performance Lab, Quick Buy Now, Rank Math SEO, Seraphinite Accelerator, Speed Optimizer, Sign In With Socials, Stachethemes Event Calendar, TeraWallet, TeraWallet Negative Balance Addon, UpdraftPlus, User Notes, User Role Editor, User Role Editor Pro, User Switching, WooCommerce, WooCommerce Stripe, WooCommerce Memberships, WooPayments, WooCommerce Subscriptions, WooCommerce Tax, WP Rollback, WP SMS, Related Products</p>
+  </section>
+
+  <hr class="gold-rule">
+
+  <!-- ============================================ -->
+  <!-- SECTION 2: ARCHITECTURE -->
+  <!-- ============================================ -->
+  <section id="architecture">
+    <h2><span class="section-number">Section 02</span>Target Architecture</h2>
+    <p>API-first architecture with full separation of frontend and backend, enabling future mobile app development on the same core services.</p>
+
+    <div class="mermaid-wrapper">
+      <pre class="mermaid">
+graph TB
+    subgraph clients [Client Applications]
+        WebApp["Next.js Web App"]
+        AdminPortal["Admin Portal"]
+        FutureMobile["React Native Mobile &lpar;Future&rpar;"]
+    end
+
+    subgraph api [API Layer]
+        Gateway["FastAPI Gateway"]
+    end
+
+    subgraph services [Backend Services]
+        AuthSvc["Auth Service"]
+        CommerceSvc["Commerce Service"]
+        LMSSvc["LMS Service"]
+        BookingSvc["Booking Service"]
+        EmailSvc["Email Service"]
+        SMSSvc["SMS Campaign Service"]
+        MediaSvc["Media Service"]
+        CMSSvc["CMS / Content Service"]
+    end
+
+    subgraph data [Data and Storage]
+        PostgreSQL["PostgreSQL"]
+        Redis["Redis"]
+        S3["S3 / Cloudflare R2"]
+        Search["Meilisearch"]
+        TaskQueue["Celery / Task Queue"]
+    end
+
+    subgraph external [External Services]
+        Stripe["Stripe"]
+        GTM["Google Tag Manager"]
+        SocialAuth["OAuth Providers"]
+        Twilio["Twilio / Vonage SMS"]
+        VideoHost["Video Hosting"]
+        LiveStream["Live Streaming"]
+        EmailProvider["Resend / SendGrid"]
+    end
+
+    WebApp --> Gateway
+    AdminPortal --> Gateway
+    FutureMobile --> Gateway
+
+    Gateway --> AuthSvc
+    Gateway --> CommerceSvc
+    Gateway --> LMSSvc
+    Gateway --> BookingSvc
+    Gateway --> EmailSvc
+    Gateway --> SMSSvc
+    Gateway --> MediaSvc
+    Gateway --> CMSSvc
+
+    AuthSvc --> PostgreSQL
+    AuthSvc --> Redis
+    AuthSvc --> SocialAuth
+    AuthSvc --> Twilio
+
+    CommerceSvc --> PostgreSQL
+    CommerceSvc --> Stripe
+
+    LMSSvc --> PostgreSQL
+    LMSSvc --> VideoHost
+    LMSSvc --> LiveStream
+    LMSSvc --> S3
+
+    BookingSvc --> PostgreSQL
+    EmailSvc --> PostgreSQL
+    EmailSvc --> EmailProvider
+
+    SMSSvc --> PostgreSQL
+    SMSSvc --> Twilio
+    SMSSvc --> TaskQueue
+    SMSSvc --> Redis
+
+    MediaSvc --> S3
+    CMSSvc --> PostgreSQL
+    CMSSvc --> Search
+      </pre>
+    </div>
+  </section>
+
+  <hr class="gold-rule">
+
+  <!-- ============================================ -->
+  <!-- SECTION 3: TECH STACK -->
+  <!-- ============================================ -->
+  <section id="tech-stack">
+    <h2><span class="section-number">Section 03</span>Tech Stack</h2>
+
+    <div class="tech-stack-grid">
+      <div class="tech-card">
+        <div class="tech-label">Backend</div>
+        <div class="tech-value">Python 3.12+, FastAPI, SQLAlchemy 2.0, Alembic, Pydantic v2</div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-label">Database</div>
+        <div class="tech-value">PostgreSQL 16 with pgvector, Redis for caching/sessions/queues</div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-label">Frontend (Web)</div>
+        <div class="tech-value">Next.js 15 (App Router), React 19, Tailwind CSS 4, shadcn/ui</div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-label">File Storage</div>
+        <div class="tech-value">Cloudflare R2 (S3-compatible, lower cost than AWS)</div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-label">Search</div>
+        <div class="tech-value">Meilisearch (replaces WordPress search)</div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-label">Email</div>
+        <div class="tech-value">Resend or SendGrid (transactional + marketing)</div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-label">Payments</div>
+        <div class="tech-value">Stripe SDK direct (Payment Intents, Billing API)</div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-label">Video &amp; Live</div>
+        <div class="tech-value">Mux or Cloudflare Stream (LMS hosting + streaming)</div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-label">Containerization</div>
+        <div class="tech-value">Docker + Docker Compose</div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-label">CI/CD</div>
+        <div class="tech-value">GitHub Actions</div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-label">SMS</div>
+        <div class="tech-value">Twilio (primary) / Vonage (fallback)</div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-label">Future Mobile</div>
+        <div class="tech-value">React Native (shares API layer)</div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="gold-rule">
+
+  <!-- ============================================ -->
+  <!-- SECTION 4: DATABASE -->
+  <!-- ============================================ -->
+  <section id="database">
+    <h2><span class="section-number">Section 04</span>Database Schema Design</h2>
+    <p>The WordPress <code>wp_postmeta</code> key-value pattern will be normalized into proper relational tables.</p>
+
+    <div class="mermaid-wrapper">
+      <pre class="mermaid">
+erDiagram
+    users ||--o{ memberships : has
+    users ||--o{ orders : places
+    users ||--o{ wallet_transactions : has
+    users ||--o{ bookings : makes
+    users ||--o{ enrollments : has
+    users ||--o{ course_progress : tracks
+
+    memberships ||--|| membership_plans : "belongs to"
+    membership_plans {
+        int id
+        string name
+        decimal price
+        string tier
+        text features_json
+    }
+
+    products ||--o{ order_items : "included in"
+    products ||--o{ product_categories : "categorized by"
+    products ||--o{ subscriptions : "subscribed via"
+
+    orders ||--o{ order_items : contains
+    orders ||--o{ payments : "paid by"
+
+    courses ||--o{ modules : contains
+    modules ||--o{ lessons : contains
+    lessons ||--o{ quizzes : has
+    courses ||--o{ enrollments : has
+    courses ||--o{ cohorts : "organized into"
+    cohorts ||--o{ cohort_members : has
+
+    enrollments ||--o{ course_progress : tracks
+    quizzes ||--o{ quiz_attempts : "attempted by"
+
+    events ||--o{ event_attendees : has
+    bookings ||--|| booking_slots : "for slot"
+      </pre>
+    </div>
+
+    <h3>Key Tables</h3>
+
+    <h4>Auth &amp; Users</h4>
+    <p><code>users</code>, <code>roles</code>, <code>permissions</code>, <code>user_roles</code>, <code>social_accounts</code>, <code>sessions</code>, <code>otp_codes</code>, <code>admin_user_notes</code>, <code>audit_log</code></p>
+
+    <h4>Commerce (Products + Events Unified)</h4>
+    <p><code>products</code> (type: physical, digital, subscription, event), <code>product_categories</code>, <code>product_variants</code>, <code>product_media</code>, <code>orders</code>, <code>order_items</code>, <code>payments</code>, <code>subscriptions</code>, <code>membership_plans</code>, <code>memberships</code>, <code>wallet_accounts</code>, <code>wallet_transactions</code>, <code>coupons</code>, <code>pricing_rules</code>, <code>conditional_fees</code>, <code>event_details</code>, <code>event_attendees</code>, <code>event_tickets</code></p>
+
+    <h4>LMS</h4>
+    <p><code>courses</code>, <code>modules</code>, <code>lessons</code>, <code>lesson_content</code>, <code>quizzes</code>, <code>quiz_questions</code>, <code>quiz_attempts</code>, <code>enrollments</code>, <code>course_progress</code>, <code>certificates</code>, <code>cohorts</code>, <code>cohort_members</code>, <code>discussion_threads</code>, <code>discussion_posts</code>, <code>live_sessions</code>, <code>live_session_recordings</code></p>
+
+    <h4>Booking</h4>
+    <p><code>booking_resources</code>, <code>booking_slots</code>, <code>bookings</code></p>
+
+    <h4>CMS</h4>
+    <p><code>pages</code>, <code>page_sections</code> (block-based content), <code>page_revisions</code>, <code>menus</code>, <code>menu_items</code>, <code>media</code>, <code>redirects</code>, <code>seo_metadata</code></p>
+
+    <h4>Email</h4>
+    <p><code>email_lists</code>, <code>email_subscribers</code>, <code>email_campaigns</code>, <code>email_templates</code></p>
+
+    <h4>SMS</h4>
+    <p><code>sms_contacts</code>, <code>sms_contact_lists</code>, <code>sms_contact_list_members</code>, <code>sms_templates</code>, <code>sms_campaigns</code>, <code>sms_campaign_messages</code>, <code>sms_delivery_logs</code>, <code>sms_opt_out_list</code>, <code>sms_scheduled_jobs</code></p>
+  </section>
+
+  <hr class="gold-rule">
+
+  <!-- ============================================ -->
+  <!-- SECTION 5: FEATURE PARITY -->
+  <!-- ============================================ -->
+  <section id="feature-parity">
+    <h2><span class="section-number">Section 05</span>Feature Parity Mapping</h2>
+    <p>Every WordPress plugin and feature mapped to its modern replacement.</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>WordPress Plugin</th>
+          <th>New Implementation</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>WooCommerce + extensions</td><td>Custom commerce module: unified product model (physical, digital, subscription, event), cart, checkout, order management</td></tr>
+        <tr><td>WooCommerce Subscriptions</td><td>Stripe Billing API integration for recurring payments</td></tr>
+        <tr><td>WooCommerce Memberships</td><td>Membership plans with gated content, tied to Stripe subscriptions</td></tr>
+        <tr><td>WooCommerce Stripe + WooPayments</td><td>Direct Stripe SDK (Payment Intents, Checkout Sessions)</td></tr>
+        <tr><td>TeraWallet + Negative Balance</td><td>Custom wallet system with credit/debit, auto-top-up on SKU SG-SUIT-006</td></tr>
+        <tr><td>Dynamic Pricing</td><td>Rule-based pricing engine in commerce module</td></tr>
+        <tr><td>Conditional Fees</td><td>Fee rules engine evaluated at checkout</td></tr>
+        <tr><td>Quick Buy Now</td><td>Frontend UX &mdash; direct-to-checkout button</td></tr>
+        <tr><td>Booking Calendar</td><td>Custom booking module with resource/slot management, My Account integration</td></tr>
+        <tr><td>Stachethemes Event Calendar</td><td><strong>Events are products</strong> &mdash; event product type with date/venue/capacity/RSVP/ticketing, calendar views</td></tr>
+        <tr><td>Elementor / Hello Elementor</td><td>Next.js pages with Tailwind CSS, pixel-matched to current design</td></tr>
+        <tr><td>Rank Math SEO</td><td>Built-in SEO: meta tags, Open Graph, JSON-LD, XML sitemap, robots.txt</td></tr>
+        <tr><td>MailPoet</td><td>Email service integration (Resend/SendGrid) + custom campaign management</td></tr>
+        <tr><td>Sign In With Socials</td><td>NextAuth.js with Google/Apple/Microsoft OAuth providers</td></tr>
+        <tr><td>WP SMS (2FA/OTP)</td><td><strong>Expanded:</strong> Twilio/Vonage for 2FA/OTP + full mass SMS campaign system</td></tr>
+        <tr><td>Google Site Kit + GTM</td><td>Direct GTM/GA4 script injection, server-side analytics option</td></tr>
+        <tr><td>User Role Editor</td><td>RBAC system with granular permissions</td></tr>
+        <tr><td>User Switching</td><td>Admin impersonation feature</td></tr>
+        <tr><td>User Notes</td><td>Admin notes on user profiles</td></tr>
+        <tr><td>UpdraftPlus</td><td>Automated PostgreSQL backups via pg_dump + S3</td></tr>
+        <tr><td>SG CachePress / Seraphinite</td><td>Redis caching + Next.js ISR/SSG + CDN</td></tr>
+        <tr><td>Related Products</td><td>Recommendation engine in commerce module</td></tr>
+        <tr><td>ClickFunnels</td><td>Landing page builder in CMS module</td></tr>
+        <tr><td>wp-admin</td><td><strong>Full Admin Portal</strong> with WordPress-like content editing</td></tr>
+        <tr><td>LMS <span class="new-badge">New</span></td><td>Full learning management system with courses, quizzes, cohorts, live sessions</td></tr>
+        <tr><td>Mass SMS <span class="new-badge">New</span></td><td>Campaign builder, contact lists, templates, scheduling, delivery tracking</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <hr class="gold-rule">
+
+  <!-- ============================================ -->
+  <!-- SECTION 6: LMS -->
+  <!-- ============================================ -->
+  <section id="lms">
+    <h2><span class="section-number">Section 06</span>LMS Module Design</h2>
+
+    <h3>Membership Tiers</h3>
+    <table>
+      <thead>
+        <tr><th>Tier</th><th>Price</th><th>Course Access</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Founders</td><td>$15,000</td><td>Base course library</td></tr>
+        <tr><td>Signature</td><td>$20,000</td><td>Extended library + cohort access</td></tr>
+        <tr><td>Prestige</td><td>$35,000</td><td>Full library + live sessions + priority cohorts</td></tr>
+        <tr><td>Executive</td><td>$45,000</td><td>Everything + 1:1 mentoring + custom content</td></tr>
+      </tbody>
+    </table>
+
+    <h3>LMS Data Flow</h3>
+    <div class="mermaid-wrapper">
+      <pre class="mermaid">
+flowchart LR
+    subgraph enrollment [Enrollment Flow]
+        Purchase["Membership Purchase"] --> MembershipCreated["Membership Created"]
+        MembershipCreated --> AutoEnroll["Auto-Enroll in Tier Courses"]
+        AutoEnroll --> CohortAssign["Assign to Cohort"]
+    end
+
+    subgraph learning [Learning Flow]
+        Student["Student"] --> Dashboard["Learning Dashboard"]
+        Dashboard --> CourseView["Course View"]
+        CourseView --> VideoLesson["Video Lessons"]
+        CourseView --> TextLesson["Text Content"]
+        CourseView --> LiveClass["Live Classes"]
+        CourseView --> Quiz["Quizzes"]
+        Quiz --> Grade["Auto-Grade"]
+        Grade --> Progress["Progress Update"]
+        Progress --> Certificate["Certificate Generation"]
+    end
+
+    subgraph adminFlow [Admin / Instructor]
+        Instructor["Instructor"] --> CourseBuilder["Course Builder"]
+        CourseBuilder --> ContentUpload["Upload Content"]
+        CourseBuilder --> QuizBuilder["Build Quizzes"]
+        CourseBuilder --> CohortMgmt["Manage Cohorts"]
+        CourseBuilder --> LiveSchedule["Schedule Live Sessions"]
+        Instructor --> AnalyticsDash["Student Analytics"]
+    end
+      </pre>
+    </div>
+
+    <h3>LMS Features at Launch</h3>
+    <ul class="feature-list">
+      <li><strong>Course Builder:</strong> Admin UI for creating courses with modules, lessons (video/text/resource), and quizzes</li>
+      <li><strong>Video Hosting:</strong> Mux or Cloudflare Stream for adaptive bitrate streaming, DRM protection</li>
+      <li><strong>Live Classes:</strong> WebRTC or Zoom/Google Meet API integration for scheduled live sessions with auto-recording</li>
+      <li><strong>Quizzes:</strong> Multiple choice, true/false, short answer, with auto-grading and manual review</li>
+      <li><strong>Progress Tracking:</strong> Per-lesson completion, module progress bars, overall course percentage</li>
+      <li><strong>Certificates:</strong> Auto-generated PDF certificates on course completion (customizable template)</li>
+      <li><strong>Cohort-Based Learning:</strong> Groups progress together with shared deadlines and discussion spaces</li>
+      <li><strong>Discussion Forums:</strong> Per-course and per-lesson threaded discussions, instructor pinned responses</li>
+      <li><strong>Drip Content:</strong> Lessons unlock on schedule relative to cohort start date or enrollment date</li>
+      <li><strong>Content Gating:</strong> Course access tied to membership tier</li>
+    </ul>
+  </section>
+
+  <hr class="gold-rule">
+
+  <!-- ============================================ -->
+  <!-- SECTION 7: ADMIN PORTAL -->
+  <!-- ============================================ -->
+  <section id="admin-portal">
+    <h2><span class="section-number">Section 07</span>Admin Portal Design</h2>
+    <p>The admin portal replaces wp-admin with a purpose-built, WordPress-like experience for non-technical users. It is a separate Next.js app that shares the same FastAPI backend.</p>
+
+    <h3>Design Principles</h3>
+    <ul class="feature-list">
+      <li><strong>WordPress-familiar UX:</strong> Left sidebar navigation, top bar with quick actions, familiar CRUD patterns &mdash; staff who know WordPress will feel at home</li>
+      <li><strong>WYSIWYG Content Editing:</strong> Rich text editor (Tiptap or Plate.js) with drag-and-drop block-based editing for pages and product descriptions</li>
+      <li><strong>Inline Media Management:</strong> Drag-and-drop image/video uploads directly into content, integrated media library with search and folders</li>
+      <li><strong>Real-time Autosave:</strong> Draft and revision history for all content, with one-click restore</li>
+      <li><strong>Role-Based Views:</strong> Each admin role sees only the sections they have permission to access</li>
+    </ul>
+
+    <h3>Admin Portal Modules</h3>
+    <div class="mermaid-wrapper">
+      <pre class="mermaid">
+flowchart TB
+    subgraph portal [Admin Portal]
+        Dashboard["Dashboard and Analytics"]
+
+        subgraph contentMgmt [Content Management]
+            PageEditor["Page Editor &lpar;WYSIWYG&rpar;"]
+            MenuEditor["Menu Builder"]
+            MediaLib["Media Library"]
+            SEOPanel["SEO Settings"]
+            Redirects["Redirect Manager"]
+        end
+
+        subgraph commerceMgmt [Commerce Management]
+            ProductMgr["Product Manager"]
+            EventMgr["Event Manager"]
+            OrderMgr["Order Manager"]
+            SubscriptionMgr["Subscription Manager"]
+            MembershipMgr["Membership Manager"]
+            CouponMgr["Coupon and Pricing Rules"]
+            WalletMgr["Wallet Manager"]
+        end
+
+        subgraph lmsAdmin [LMS Administration]
+            CourseBldr["Course Builder"]
+            CohortMgr["Cohort Manager"]
+            StudentProgress["Student Progress"]
+            CertificateMgr["Certificate Templates"]
+            LiveSessionMgr["Live Session Scheduler"]
+        end
+
+        subgraph commsMgmt [Communications]
+            EmailCampaigns["Email Campaigns"]
+            SMSCampaigns["SMS Campaign Manager"]
+            ContactLists["Contact List Manager"]
+        end
+
+        subgraph userMgmt [User Management]
+            UserList["User List and Search"]
+            RoleMgr["Role Editor"]
+            UserImpersonate["Impersonation"]
+            UserNotes["Admin Notes"]
+        end
+
+        subgraph systemMgmt [System]
+            AuditLog["Audit Log Viewer"]
+            BackupMgr["Backup Manager"]
+            SettingsPanel["Global Settings"]
+            BookingMgr["Booking Manager"]
+        end
+    end
+      </pre>
+    </div>
+
+    <h3>Content Editor (WordPress-like)</h3>
+    <p>The page and product editor uses a block-based WYSIWYG approach:</p>
+    <ul>
+      <li><strong>Block Types:</strong> Heading, paragraph, image, video, gallery, button, columns, spacer, HTML embed, product grid, event calendar, form, testimonial, FAQ accordion, pricing table</li>
+      <li><strong>Drag-and-Drop:</strong> Reorder blocks by dragging, nest blocks inside columns</li>
+      <li><strong>Inline Styling:</strong> Font, color, spacing, alignment controls per block &mdash; no code needed</li>
+      <li><strong>Templates:</strong> Pre-built page templates (landing page, product page, about page, contact page)</li>
+      <li><strong>Preview:</strong> Live preview before publishing, desktop/tablet/mobile toggles</li>
+      <li><strong>Revision History:</strong> Every save creates a revision; compare diffs and restore any previous version</li>
+      <li><strong>Scheduling:</strong> Schedule publish/unpublish dates for pages and products</li>
+    </ul>
+
+    <h3>Product Manager (Unified with Events)</h3>
+    <p>Products and events share the same management interface with a <code>product_type</code> selector:</p>
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="label">Product Types</div>
+        <div class="value">Physical, Digital, Subscription, <strong>Event</strong></div>
+      </div>
+      <div class="info-card">
+        <div class="label">Common Fields</div>
+        <div class="value">Name, slug, description (WYSIWYG), images/gallery, price, sale price, SKU, categories, tags, SEO metadata, status</div>
+      </div>
+      <div class="info-card">
+        <div class="label">Event-Specific Fields</div>
+        <div class="value">Date/time, end date, venue/location, capacity, RSVP toggle, ticket types (free, paid, VIP), recurring rules, calendar color</div>
+      </div>
+      <div class="info-card">
+        <div class="label">Bulk Actions</div>
+        <div class="value">Bulk edit price, category, status; bulk delete; CSV import/export</div>
+      </div>
+    </div>
+
+    <h3>User Management</h3>
+    <ul>
+      <li><strong>User List:</strong> Searchable, filterable (by role, membership, registration date, last login), sortable</li>
+      <li><strong>User Profile:</strong> View/edit profile, view orders, subscriptions, memberships, wallet balance, LMS enrollments, booking history</li>
+      <li><strong>Admin Notes:</strong> Private notes visible only to admins</li>
+      <li><strong>Impersonation:</strong> &ldquo;Login as user&rdquo; button to see the site as that user</li>
+      <li><strong>Bulk Actions:</strong> Bulk role change, bulk email/SMS, bulk export</li>
+    </ul>
+  </section>
+
+  <hr class="gold-rule">
+
+  <!-- ============================================ -->
+  <!-- SECTION 8: SMS -->
+  <!-- ============================================ -->
+  <section id="sms">
+    <h2><span class="section-number">Section 08</span>Mass SMS Campaign System</h2>
+    <p>Replaces and expands upon WP SMS. This is a full campaign management system, not just 2FA/OTP.</p>
+
+    <h3>SMS Architecture</h3>
+    <div class="mermaid-wrapper">
+      <pre class="mermaid">
+flowchart LR
+    subgraph adminSms [Admin Portal]
+        ContactMgr["Contact Manager"]
+        ListBuilder["List Builder"]
+        TemplateMgr["Template Editor"]
+        CampaignBldr["Campaign Builder"]
+        SchedSms["Scheduler"]
+        AnalyticsSms["Delivery Analytics"]
+    end
+
+    subgraph backendSms [Backend]
+        SMSApi["SMS API Service"]
+        QueueSms["Task Queue"]
+        RateLimiterSms["Rate Limiter"]
+        OptOutMgr["Opt-Out Manager"]
+    end
+
+    subgraph providerSms [SMS Provider]
+        TwilioSms["Twilio"]
+        VonageSms["Vonage"]
+    end
+
+    ContactMgr --> ListBuilder
+    ListBuilder --> CampaignBldr
+    TemplateMgr --> CampaignBldr
+    CampaignBldr --> SchedSms
+    SchedSms --> SMSApi
+    SMSApi --> QueueSms
+    QueueSms --> RateLimiterSms
+    RateLimiterSms --> TwilioSms
+    RateLimiterSms --> VonageSms
+    TwilioSms --> AnalyticsSms
+    VonageSms --> AnalyticsSms
+    SMSApi --> OptOutMgr
+      </pre>
+    </div>
+
+    <h3>Contact Management</h3>
+    <ul>
+      <li>Import contacts from CSV, sync from user database, manual entry</li>
+      <li>Custom fields per contact (name, membership tier, tags)</li>
+      <li>Smart lists: dynamic lists based on filters (e.g., &ldquo;all Executive members&rdquo;, &ldquo;users who booked in last 30 days&rdquo;)</li>
+      <li>Static lists: manually curated groups</li>
+    </ul>
+
+    <h3>Template Builder</h3>
+    <ul>
+      <li>Reusable message templates with merge fields: <code>{first_name}</code>, <code>{membership_tier}</code>, <code>{next_event}</code>, <code>{wallet_balance}</code></li>
+      <li>Character count with SMS segment calculator (160 char / 70 char unicode awareness)</li>
+      <li>Template categories: promotional, transactional, appointment reminder, event notification, LMS update</li>
+    </ul>
+
+    <h3>Campaign Builder</h3>
+    <ul>
+      <li>Select audience (one or more contact lists, or smart filter)</li>
+      <li>Choose or compose message (from template or freeform)</li>
+      <li>Schedule: send now, send later (date/time with timezone), or recurring (daily/weekly/monthly)</li>
+      <li>A/B testing: split audience and test two message variants</li>
+      <li>Preview: see personalized message for sample contacts before sending</li>
+    </ul>
+
+    <h3>Delivery &amp; Analytics</h3>
+    <ul>
+      <li>Real-time delivery status: queued, sent, delivered, failed, bounced</li>
+      <li>Per-campaign metrics: delivery rate, failure rate, opt-out rate, cost</li>
+      <li>Per-contact delivery history</li>
+      <li>Exportable reports (CSV/PDF)</li>
+    </ul>
+
+    <h3>Compliance &amp; Opt-Out</h3>
+    <ul>
+      <li>Automatic STOP/unsubscribe handling (TCPA/CTIA compliant)</li>
+      <li>Opt-out list enforced on every send &mdash; opted-out contacts are never messaged</li>
+      <li>Opt-in confirmation flow for new contacts</li>
+      <li>Quiet hours enforcement (no messages outside configurable hours per timezone)</li>
+      <li>Consent tracking with timestamps</li>
+    </ul>
+
+    <h3>Automated SMS Triggers</h3>
+    <div class="info-grid">
+      <div class="info-card"><div class="label">Commerce</div><div class="value">Order confirmation, shipping updates, wallet top-up confirmation</div></div>
+      <div class="info-card"><div class="label">Booking</div><div class="value">Appointment reminders (24h and 1h before)</div></div>
+      <div class="info-card"><div class="label">Events</div><div class="value">Event reminders, RSVP confirmations</div></div>
+      <div class="info-card"><div class="label">Memberships</div><div class="value">Renewal reminders, expiration notices</div></div>
+      <div class="info-card"><div class="label">LMS</div><div class="value">Course start notifications, assignment due reminders</div></div>
+      <div class="info-card"><div class="label">Security</div><div class="value">2FA / OTP codes</div></div>
+    </div>
+  </section>
+
+  <hr class="gold-rule">
+
+  <!-- ============================================ -->
+  <!-- SECTION 9: SECURITY -->
+  <!-- ============================================ -->
+  <section id="security">
+    <h2><span class="section-number">Section 09</span>Security Hardening</h2>
+
+    <div class="security-grid">
+      <div class="security-item">
+        <div class="sec-label">Authentication</div>
+        <div class="sec-desc">JWT with short-lived access tokens (15 min) + refresh tokens (httpOnly cookies), bcrypt password hashing</div>
+      </div>
+      <div class="security-item">
+        <div class="sec-label">Authorization</div>
+        <div class="sec-desc">RBAC with middleware enforcement on every endpoint</div>
+      </div>
+      <div class="security-item">
+        <div class="sec-label">Input Validation</div>
+        <div class="sec-desc">Pydantic models validate all API input; parameterized SQL queries via SQLAlchemy ORM</div>
+      </div>
+      <div class="security-item">
+        <div class="sec-label">Rate Limiting</div>
+        <div class="sec-desc">Redis-backed rate limiting on auth endpoints, API throttling per user</div>
+      </div>
+      <div class="security-item">
+        <div class="sec-label">CSRF / XSS</div>
+        <div class="sec-desc">SameSite cookies, Content Security Policy headers, automatic HTML escaping</div>
+      </div>
+      <div class="security-item">
+        <div class="sec-label">Secrets Management</div>
+        <div class="sec-desc">Environment variables via .env files (dev), cloud secrets manager (prod)</div>
+      </div>
+      <div class="security-item">
+        <div class="sec-label">Audit Logging</div>
+        <div class="sec-desc">All admin actions, payment events, and auth events logged with timestamps and actor</div>
+      </div>
+      <div class="security-item">
+        <div class="sec-label">File Upload Security</div>
+        <div class="sec-desc">File type validation, virus scanning, size limits, signed upload URLs</div>
+      </div>
+      <div class="security-item">
+        <div class="sec-label">API Security</div>
+        <div class="sec-desc">CORS whitelist, request size limits, SQL injection prevention, header hardening</div>
+      </div>
+      <div class="security-item">
+        <div class="sec-label">Infrastructure</div>
+        <div class="sec-desc">HTTPS enforced, HTTP Strict Transport Security, automated SSL via Let's Encrypt or Cloudflare</div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="gold-rule">
+
+  <!-- ============================================ -->
+  <!-- SECTION 10: MIGRATION STRATEGY -->
+  <!-- ============================================ -->
+  <section id="migration">
+    <h2><span class="section-number">Section 10</span>Migration Strategy</h2>
+    <p>10 phases over 24 weeks, from foundation to launch.</p>
+
+    <div class="phase-card">
+      <div class="phase-header">
+        <div class="phase-title">Phase 1: Foundation</div>
+        <div class="phase-weeks">Weeks 1&ndash;3</div>
+      </div>
+      <ul>
+        <li>Project scaffolding: FastAPI backend, Next.js frontend, Docker Compose, PostgreSQL, Redis</li>
+        <li>Database schema design and Alembic migrations</li>
+        <li>Auth system: registration, login, social OAuth, JWT, 2FA/OTP, RBAC</li>
+        <li>Media service: S3/R2 upload, image processing, CDN integration</li>
+      </ul>
+    </div>
+
+    <div class="phase-card">
+      <div class="phase-header">
+        <div class="phase-title">Phase 2: Admin Portal Foundation</div>
+        <div class="phase-weeks">Weeks 4&ndash;5</div>
+      </div>
+      <ul>
+        <li>Admin portal scaffolding (Next.js app with sidebar navigation, RBAC route guards)</li>
+        <li>WYSIWYG block editor component (Tiptap or Plate.js) with drag-and-drop blocks</li>
+        <li>Media library: upload, organize, search, inline insertion into editor</li>
+        <li>Page editor: create/edit/publish pages with revision history, preview, scheduling</li>
+        <li>Menu builder: drag-and-drop menu management</li>
+        <li>SEO panel: per-page meta tags, Open Graph, JSON-LD editing</li>
+        <li>Global settings panel</li>
+      </ul>
+    </div>
+
+    <div class="phase-card">
+      <div class="phase-header">
+        <div class="phase-title">Phase 3: Commerce Core</div>
+        <div class="phase-weeks">Weeks 6&ndash;8</div>
+      </div>
+      <ul>
+        <li>Unified product model: physical, digital, subscription, <strong>event</strong> product types</li>
+        <li>Product manager in admin portal: WYSIWYG description editor, image gallery, pricing, inventory, bulk actions, CSV import/export</li>
+        <li>Event-specific admin: date/venue/capacity/RSVP/ticketing, calendar admin view, drag-to-reschedule, attendee management</li>
+        <li>Cart and checkout flow with Stripe Payment Intents</li>
+        <li>Subscription management via Stripe Billing</li>
+        <li>Membership plans: Founders ($15K), Signature ($20K), Prestige ($35K), Executive ($45K)</li>
+        <li>Wallet system with auto-top-up logic (SKU SG-SUIT-006)</li>
+        <li>Order management admin: order list, detail view, refunds, status updates</li>
+        <li>Coupon and pricing rules admin</li>
+      </ul>
+    </div>
+
+    <div class="phase-card">
+      <div class="phase-header">
+        <div class="phase-title">Phase 4: Communications &mdash; Email &amp; SMS</div>
+        <div class="phase-weeks">Weeks 9&ndash;10</div>
+      </div>
+      <ul>
+        <li>Email system: transactional emails (Resend/SendGrid), newsletter campaign builder in admin</li>
+        <li>SMS system backend: Twilio/Vonage integration, task queue (Celery + Redis), rate limiting</li>
+        <li>SMS contact management: import, sync from users, smart lists, static lists, custom fields</li>
+        <li>SMS template builder: merge fields, character/segment calculator, template categories</li>
+        <li>SMS campaign builder: audience selection, scheduling, A/B testing, preview</li>
+        <li>SMS delivery tracking: real-time status, per-campaign analytics, exportable reports</li>
+        <li>Compliance: STOP handling, opt-out list enforcement, quiet hours, consent tracking</li>
+        <li>Automated SMS triggers: order confirmations, appointment reminders, event reminders, membership renewals, LMS notifications, 2FA/OTP</li>
+      </ul>
+    </div>
+
+    <div class="phase-card">
+      <div class="phase-header">
+        <div class="phase-title">Phase 5: Booking &amp; Events Frontend</div>
+        <div class="phase-weeks">Week 11</div>
+      </div>
+      <ul>
+        <li>Booking module: resources, slots, appointments, My Account integration</li>
+        <li>Event calendar frontend: agenda/month/week/grid views, RSVP flow, ticket purchase</li>
+        <li>Booking admin: resource/slot management, booking list, calendar view</li>
+        <li>Event attendee management admin: check-in, export, ticket sales dashboard</li>
+      </ul>
+    </div>
+
+    <div class="phase-card">
+      <div class="phase-header">
+        <div class="phase-title">Phase 6: LMS</div>
+        <div class="phase-weeks">Weeks 12&ndash;15</div>
+      </div>
+      <ul>
+        <li>Course/module/lesson data model and CRUD API</li>
+        <li>Course builder in admin portal: WYSIWYG lesson editor, module/lesson ordering, media upload</li>
+        <li>Video upload and streaming integration (Mux/Cloudflare Stream)</li>
+        <li>Quiz engine: question types, auto-grading, attempt tracking, quiz builder in admin</li>
+        <li>Enrollment and progress tracking with admin analytics dashboard</li>
+        <li>Cohort management: creation, member assignment, shared timelines</li>
+        <li>Discussion forums: threaded posts, instructor tools</li>
+        <li>Live session scheduling and recording integration</li>
+        <li>Certificate generation (PDF) with admin template editor</li>
+        <li>Content gating by membership tier</li>
+      </ul>
+    </div>
+
+    <div class="phase-card">
+      <div class="phase-header">
+        <div class="phase-title">Phase 7: User Management &amp; Admin Completion</div>
+        <div class="phase-weeks">Week 16</div>
+      </div>
+      <ul>
+        <li>User list: search, filter (role/membership/dates), sortable, paginated</li>
+        <li>User profile admin: edit profile, view full history (orders, subscriptions, memberships, wallet, LMS, bookings)</li>
+        <li>Admin notes per user (private, admin-only)</li>
+        <li>User impersonation (login-as-user)</li>
+        <li>Role and permission editor</li>
+        <li>Audit log viewer: all admin actions, payment events, auth events with filtering and export</li>
+        <li>Backup manager: trigger and download PostgreSQL backups</li>
+        <li>Admin dashboard: KPI widgets (revenue, users, orders, active memberships, LMS enrollment, SMS delivery stats)</li>
+      </ul>
+    </div>
+
+    <div class="phase-card">
+      <div class="phase-header">
+        <div class="phase-title">Phase 8: Public Frontend Recreation</div>
+        <div class="phase-weeks">Weeks 17&ndash;20</div>
+      </div>
+      <ul>
+        <li>Pixel-match the current Elementor-built pages in Next.js + Tailwind</li>
+        <li>Home page, product pages, category pages, checkout flow</li>
+        <li>My Account area: orders, subscriptions, memberships, bookings, wallet, LMS dashboard</li>
+        <li>Event calendar views (public-facing)</li>
+        <li>Responsive design (mobile-first, matching current breakpoints)</li>
+        <li>GTM/analytics integration</li>
+      </ul>
+    </div>
+
+    <div class="phase-card">
+      <div class="phase-header">
+        <div class="phase-title">Phase 9: Data Migration</div>
+        <div class="phase-weeks">Week 21</div>
+      </div>
+      <ul>
+        <li>Write migration scripts to transfer from MySQL (<code>agh_</code> prefix) to PostgreSQL</li>
+        <li>Migrate: users (528), products, orders, subscriptions, memberships, wallet balances, bookings, events, media files</li>
+        <li>URL redirect mapping (old WordPress URLs to new routes)</li>
+        <li>SEO preservation: 301 redirects, meta tags, sitemap</li>
+      </ul>
+    </div>
+
+    <div class="phase-card">
+      <div class="phase-header">
+        <div class="phase-title">Phase 10: Testing &amp; Launch</div>
+        <div class="phase-weeks">Weeks 22&ndash;24</div>
+      </div>
+      <ul>
+        <li>End-to-end testing: auth flows, purchase flows, subscription billing, booking, LMS enrollment, SMS campaigns</li>
+        <li>Admin portal UAT: content editors test page/product/event editing workflows</li>
+        <li>Performance testing: load testing API endpoints, frontend Lighthouse scores</li>
+        <li>Security audit: OWASP top 10 checklist, penetration testing</li>
+        <li>Side-by-side comparison with live WordPress site</li>
+        <li>Staging deployment, UAT with real users</li>
+        <li>DNS cutover, monitoring setup (Sentry, uptime checks)</li>
+      </ul>
+    </div>
+  </section>
+
+  <hr class="gold-rule">
+
+  <!-- ============================================ -->
+  <!-- SECTION 11: PROJECT STRUCTURE -->
+  <!-- ============================================ -->
+  <section id="project-structure">
+    <h2><span class="section-number">Section 11</span>Project Structure</h2>
+
+    <div class="project-tree"><span class="dir">sg_platform/</span>
+  <span class="dir">backend/</span>
+    <span class="dir">app/</span>
+      <span class="dir">api/v1/</span>              <span class="comment"># FastAPI route handlers</span>
+        auth.py
+        users.py
+        products.py           <span class="comment"># Unified: physical, digital, subscription, event</span>
+        orders.py
+        subscriptions.py
+        memberships.py
+        wallet.py
+        bookings.py
+        events.py             <span class="comment"># Event-specific endpoints (calendar, RSVP, attendees)</span>
+        courses.py
+        lessons.py
+        quizzes.py
+        enrollments.py
+        cohorts.py
+        discussions.py
+        media.py
+        cms.py                <span class="comment"># Pages, menus, redirects</span>
+        email.py
+        sms.py                <span class="comment"># SMS campaigns, contacts, templates, delivery</span>
+        admin.py              <span class="comment"># Audit log, dashboard stats, settings</span>
+      <span class="dir">models/</span>               <span class="comment"># SQLAlchemy models</span>
+      <span class="dir">schemas/</span>              <span class="comment"># Pydantic request/response schemas</span>
+      <span class="dir">services/</span>             <span class="comment"># Business logic layer</span>
+        sms_service.py        <span class="comment"># Campaign execution, Twilio/Vonage integration</span>
+        email_service.py      <span class="comment"># Transactional + campaign emails</span>
+        media_service.py      <span class="comment"># S3/R2 upload, image processing</span>
+        wallet_service.py     <span class="comment"># Wallet logic, auto-top-up</span>
+      <span class="dir">tasks/</span>                <span class="comment"># Celery async tasks</span>
+        sms_tasks.py          <span class="comment"># Bulk SMS sending, scheduling</span>
+        email_tasks.py        <span class="comment"># Bulk email sending</span>
+        backup_tasks.py       <span class="comment"># Automated backups</span>
+      <span class="dir">middleware/</span>            <span class="comment"># Auth, rate limiting, logging, audit</span>
+      <span class="dir">migrations/</span>            <span class="comment"># Alembic migrations</span>
+      <span class="dir">core/</span>                 <span class="comment"># Config, security, dependencies</span>
+    <span class="dir">tests/</span>
+    requirements.txt
+    Dockerfile
+  <span class="dir">frontend/</span>                 <span class="comment"># Public-facing website</span>
+    <span class="dir">app/</span>                    <span class="comment"># Next.js App Router pages</span>
+    <span class="dir">components/</span>             <span class="comment"># React components</span>
+    <span class="dir">lib/</span>                    <span class="comment"># API client, utilities</span>
+    <span class="dir">public/</span>                 <span class="comment"># Static assets</span>
+    <span class="dir">styles/</span>                 <span class="comment"># Tailwind config, global styles</span>
+    Dockerfile
+  <span class="dir">admin/</span>                    <span class="comment"># Admin Portal (separate Next.js app)</span>
+    <span class="dir">app/</span>
+      <span class="dir">dashboard/</span>            <span class="comment"># KPI widgets, analytics overview</span>
+      <span class="dir">pages/</span>                <span class="comment"># Page editor with WYSIWYG block editor</span>
+      <span class="dir">products/</span>             <span class="comment"># Product manager (all types including events)</span>
+      <span class="dir">events/</span>               <span class="comment"># Event calendar admin view, attendee management</span>
+      <span class="dir">orders/</span>               <span class="comment"># Order management</span>
+      <span class="dir">subscriptions/</span>        <span class="comment"># Subscription management</span>
+      <span class="dir">memberships/</span>          <span class="comment"># Membership plan management</span>
+      <span class="dir">wallet/</span>               <span class="comment"># Wallet overview, manual adjustments</span>
+      <span class="dir">bookings/</span>             <span class="comment"># Booking resource/slot management</span>
+      <span class="dir">courses/</span>              <span class="comment"># LMS course builder</span>
+      <span class="dir">cohorts/</span>              <span class="comment"># Cohort management</span>
+      <span class="dir">students/</span>             <span class="comment"># Student progress and grades</span>
+      <span class="dir">users/</span>                <span class="comment"># User list, profiles, impersonation</span>
+      <span class="dir">roles/</span>                <span class="comment"># Role and permission editor</span>
+      <span class="dir">email/</span>                <span class="comment"># Email campaign builder</span>
+      <span class="dir">sms/</span>                  <span class="comment"># SMS campaigns, contacts, templates, analytics</span>
+      <span class="dir">media/</span>                <span class="comment"># Media library</span>
+      <span class="dir">menus/</span>                <span class="comment"># Menu builder</span>
+      <span class="dir">seo/</span>                  <span class="comment"># SEO settings</span>
+      <span class="dir">settings/</span>             <span class="comment"># Global settings</span>
+      <span class="dir">audit-log/</span>            <span class="comment"># Audit log viewer</span>
+      <span class="dir">backups/</span>              <span class="comment"># Backup manager</span>
+    <span class="dir">components/</span>
+      <span class="dir">editor/</span>               <span class="comment"># WYSIWYG block editor components</span>
+      <span class="dir">data-tables/</span>          <span class="comment"># Reusable sortable/filterable tables</span>
+      <span class="dir">forms/</span>                <span class="comment"># Form components for CRUD operations</span>
+      <span class="dir">charts/</span>               <span class="comment"># Analytics chart components</span>
+    <span class="dir">lib/</span>
+    Dockerfile
+  docker-compose.yml
+  <span class="dir">.github/workflows/</span>        <span class="comment"># CI/CD</span>
+  <span class="dir">docs/</span>                     <span class="comment"># Architecture docs, API specs</span></div>
+  </section>
+
+</div>
+
+<div class="footer">
+  <div class="logo-text">Snob Group</div>
+  <p>Platform Migration Plan &bull; Confidential &bull; March 2026</p>
+  <p style="margin-top: 8px;">233 Route 17, Suite 8, Tuxedo Park, NY 10987 &bull; 1-844-7-SNOBBY</p>
+</div>
+
+</body>
+</html>
