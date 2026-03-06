@@ -44,8 +44,8 @@ docker-compose exec backend alembic upgrade head
 
 - **Frontend**: http://localhost:3000
 - **Admin**: http://localhost:3001
-- **API**: http://localhost:8000/api/v1
-- **API Docs**: http://localhost:8000/api/docs
+- **API**: http://localhost:8004/api/v1
+- **API Docs**: http://localhost:8004/api/docs
 
 ## Development Setup
 

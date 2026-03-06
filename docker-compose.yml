@@ -41,7 +41,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     ports:
-      - "8000:8000"
+      - "8004:8000"  # Host 8004 to avoid conflict with other apps using 8000
     volumes:
       - ./backend:/app
     environment:
@@ -83,7 +83,7 @@ services:
       - /app/node_modules
       - /app/.next
     environment:
-      NEXT_PUBLIC_API_URL: http://localhost:8000/api/v1
+      NEXT_PUBLIC_API_URL: http://localhost:8004/api/v1
     depends_on:
       - backend
 
@@ -98,7 +98,7 @@ services:
       - /app/node_modules
       - /app/.next
     environment:
-      NEXT_PUBLIC_API_URL: http://localhost:8000/api/v1
+      NEXT_PUBLIC_API_URL: http://localhost:8004/api/v1
     depends_on:
       - backend
 

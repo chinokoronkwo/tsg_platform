@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { DataTable, Column } from "@/components/data-tables/data-table";
 
-const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8004/api/v1";
 
 interface AuditEntry {
   id: number;
