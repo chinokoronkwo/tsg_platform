@@ -6,7 +6,7 @@ services:
       POSTGRES_PASSWORD: snobgroup
       POSTGRES_DB: snobgroup
     ports:
-      - "5432:5432"
+      - "5435:5432"  # Host 5435 to avoid conflict with DMDB (5432), dmdb-search (5433), kIDdentify (5434)
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -18,7 +18,7 @@ services:
   redis:
     image: redis:7-alpine
     ports:
-      - "6379:6379"
+      - "6382:6379"  # Host 6382 to avoid conflict with DMDB (6380), dmdb-search (6381), kIDdentify (6383)
     volumes:
       - redisdata:/data
     healthcheck:
@@ -77,7 +77,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "3004:3000"  # Host 3004 to avoid conflict with kIDdentify (3000), dmdb-search (3002, 3003)
     volumes:
       - ./frontend:/app
       - /app/node_modules
@@ -92,7 +92,7 @@ services:
       context: ./admin
       dockerfile: Dockerfile
     ports:
-      - "3001:3000"
+      - "3005:3000"  # Host 3005 to avoid conflict with kIDdentify (3001)
     volumes:
       - ./admin:/app
       - /app/node_modules

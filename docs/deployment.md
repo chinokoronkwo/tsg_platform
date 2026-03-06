@@ -36,7 +36,7 @@ Create a `.env.prod` file with the following variables:
 | `S3_BUCKET_NAME` | S3 bucket name | For media |
 | `S3_PUBLIC_URL` | Public URL for media | Optional |
 | `MEILISEARCH_MASTER_KEY` | Meilisearch master key | Yes (production) |
-| `NEXT_PUBLIC_API_URL` | API URL for frontend (e.g. `https://api.yourdomain.com/api/v1`) | Yes |
+| `NEXT_PUBLIC_API_URL` | API URL for frontend (e.g. `https://api.thesnobgroup.com/api/v1`) | Yes |
 
 ## Docker Compose Deployment
 
@@ -80,9 +80,9 @@ Point your domain to the server IP:
 
 | Record | Type | Value |
 |--------|------|-------|
-| `yourdomain.com` | A | Server IP |
-| `api.yourdomain.com` | A or CNAME | Server IP or load balancer |
-| `admin.yourdomain.com` | A or CNAME | Server IP (if using subdomain for admin) |
+| `thesnobgroup.com` | A | Server IP |
+| `api.thesnobgroup.com` | A or CNAME | Server IP or load balancer |
+| `admin.thesnobgroup.com` | A or CNAME | Server IP (if using subdomain for admin) |
 
 Update `CORS_ORIGINS` and `NEXT_PUBLIC_API_URL` to match your domains.
 
@@ -95,12 +95,12 @@ Update `CORS_ORIGINS` and `NEXT_PUBLIC_API_URL` to match your domains.
 apt install certbot
 
 # Obtain certificate (standalone mode - stop nginx first)
-certbot certonly --standalone -d yourdomain.com -d api.yourdomain.com
+certbot certonly --standalone -d thesnobgroup.com -d api.thesnobgroup.com
 
 # Copy certs to nginx/ssl/
 mkdir -p nginx/ssl
-cp /etc/letsencrypt/live/yourdomain.com/fullchain.pem nginx/ssl/
-cp /etc/letsencrypt/live/yourdomain.com/privkey.pem nginx/ssl/
+cp /etc/letsencrypt/live/thesnobgroup.com/fullchain.pem nginx/ssl/
+cp /etc/letsencrypt/live/thesnobgroup.com/privkey.pem nginx/ssl/
 
 # Uncomment SSL server block in nginx/nginx.prod.conf
 # Restart nginx
@@ -126,8 +126,8 @@ Install `sentry-sdk` and configure in `app/main.py`.
 
 Use UptimeRobot, Pingdom, or similar to monitor:
 
-- `https://yourdomain.com/api/health` (backend health)
-- `https://yourdomain.com` (frontend)
+- `https://thesnobgroup.com/api/health` (backend health)
+- `https://thesnobgroup.com` (frontend)
 
 ## Backup Strategy
 
