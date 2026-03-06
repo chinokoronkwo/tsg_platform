@@ -1,4 +1,20 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://thesnobgroup.com";
+
+export const metadata: Metadata = {
+  title: "Memberships | Snob Group",
+  description:
+    "Join an exclusive community of discerning gentlemen. Explore Founders, Signature, Prestige, and Executive membership tiers.",
+  openGraph: {
+    title: "Memberships | Snob Group",
+    description:
+      "Explore our exclusive membership tiers designed to elevate your lifestyle.",
+    url: `${BASE_URL}/memberships`,
+  },
+  alternates: { canonical: `${BASE_URL}/memberships` },
+};
 
 const tiers = [
   {

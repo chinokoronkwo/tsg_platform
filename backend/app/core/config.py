@@ -60,6 +60,9 @@ class Settings(BaseSettings):
     # GTM
     GTM_CONTAINER_ID: str = "GTM-WZHPTK8Z"
 
+    # Sentry
+    SENTRY_DSN: str = ""
+
     model_config = {"env_file": ".env", "extra": "ignore"}
 
 

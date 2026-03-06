@@ -73,6 +73,7 @@ services:
       S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY}
       S3_BUCKET_NAME: ${S3_BUCKET_NAME}
       CORS_ORIGINS: ${CORS_ORIGINS:-https://thesnobgroup.com,https://admin.thesnobgroup.com}
+      SENTRY_DSN: ${SENTRY_DSN:-}
       DEBUG: "false"
     depends_on:
       db:

@@ -7,7 +7,7 @@ from typing import Optional
 from ...core.database import get_db
 from ...middleware.auth import get_current_user, require_admin, require_editor
 from ...models.user import User
-from ...services.cms_service import PageService, MenuService
+from ...services.cms_service import PageService, MenuService, RedirectService, SEOService
 from ...schemas.cms import (
     PageCreate,
     PageUpdate,
@@ -18,6 +18,10 @@ from ...schemas.cms import (
     MenuCreate,
     MenuResponse,
     MenuItemResponse,
+    RedirectCreate,
+    RedirectResponse,
+    SEOMetadataCreate,
+    SEOMetadataResponse,
 )
 
 router = APIRouter()
@@ -196,3 +200,110 @@ def _menu_item_to_response(item) -> MenuItemResponse:
         sort_order=item.sort_order,
         children=[_menu_item_to_response(c) for c in children],
     )
+
+
+# --- SEO Metadata ---
+@router.get("/seo/page/{page_id}", response_model=SEOMetadataResponse | None)
+async def get_page_seo(
+    page_id: int,
+    db: AsyncSession = Depends(get_db),
+):
+    svc = SEOService(db)
+    return await svc.get_for_page(page_id)
+
+
+@router.put("/seo/page/{page_id}", response_model=SEOMetadataResponse)
+async def update_page_seo(
+    page_id: int,
+    data: SEOMetadataCreate,
+    db: AsyncSession = Depends(get_db),
+    user: User = Depends(require_editor),
+):
+    svc = SEOService(db)
+    return await svc.update_for_page(page_id, data)
+
+
+@router.get("/seo/entity/{entity_type}/{entity_id}", response_model=SEOMetadataResponse | None)
+async def get_entity_seo(
+    entity_type: str,
+    entity_id: int,
+    db: AsyncSession = Depends(get_db),
+):
+    svc = SEOService(db)
+    return await svc.get_for_entity(entity_type, entity_id)
+
+
+@router.put("/seo/entity/{entity_type}/{entity_id}", response_model=SEOMetadataResponse)
+async def update_entity_seo(
+    entity_type: str,
+    entity_id: int,
+    data: SEOMetadataCreate,
+    db: AsyncSession = Depends(get_db),
+    user: User = Depends(require_editor),
+):
+    svc = SEOService(db)
+    return await svc.update_for_entity(entity_type, entity_id, data)
+
+
+# --- Redirects ---
+@router.get("/redirects")
+async def list_redirects(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(50, ge=1, le=200),
+    db: AsyncSession = Depends(get_db),
+    user: User = Depends(require_editor),
+):
+    svc = RedirectService(db)
+    items, total = await svc.list_redirects(skip=skip, limit=limit)
+    return {
+        "items": [RedirectResponse.model_validate(r) for r in items],
+        "total": total,
+    }
+
+
+@router.post("/redirects", response_model=RedirectResponse, status_code=status.HTTP_201_CREATED)
+async def create_redirect(
+    data: RedirectCreate,
+    db: AsyncSession = Depends(get_db),
+    user: User = Depends(require_editor),
+):
+    svc = RedirectService(db)
+    return await svc.create_redirect(data)
+
+
+@router.put("/redirects/{redirect_id}", response_model=RedirectResponse)
+async def update_redirect(
+    redirect_id: int,
+    data: RedirectCreate,
+    db: AsyncSession = Depends(get_db),
+    user: User = Depends(require_editor),
+):
+    svc = RedirectService(db)
+    redirect = await svc.update_redirect(redirect_id, data)
+    if not redirect:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Redirect not found")
+    return redirect
+
+
+@router.delete("/redirects/{redirect_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_redirect(
+    redirect_id: int,
+    db: AsyncSession = Depends(get_db),
+    user: User = Depends(require_editor),
+):
+    svc = RedirectService(db)
+    deleted = await svc.delete_redirect(redirect_id)
+    if not deleted:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Redirect not found")
+
+
+@router.get("/redirects/lookup")
+async def lookup_redirect(
+    path: str = Query(...),
+    db: AsyncSession = Depends(get_db),
+):
+    svc = RedirectService(db)
+    redirect = await svc.lookup_by_path(path)
+    if not redirect:
+        return None
+    return RedirectResponse.model_validate(redirect)

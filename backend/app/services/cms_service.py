@@ -390,6 +390,15 @@ class RedirectService:
         await self.db.commit()
         return True
 
+    async def lookup_by_path(self, source_path: str) -> Redirect | None:
+        result = await self.db.execute(
+            select(Redirect).where(
+                Redirect.source_path == source_path,
+                Redirect.is_active.is_(True),
+            )
+        )
+        return result.scalar_one_or_none()
+
 
 class SEOService:
     def __init__(self, db: AsyncSession):
@@ -427,6 +436,41 @@ class SEOService:
             return existing
         seo = SEOMetadata(
             page_id=page_id,
+            title=data.title,
+            description=data.description,
+            canonical_url=data.canonical_url,
+            og_title=data.og_title,
+            og_description=data.og_description,
+            og_image=data.og_image,
+            json_ld=data.json_ld,
+            no_index=data.no_index,
+            no_follow=data.no_follow,
+        )
+        self.db.add(seo)
+        await self.db.commit()
+        await self.db.refresh(seo)
+        return seo
+
+    async def update_for_entity(
+        self, entity_type: str, entity_id: int, data: SEOMetadataCreate
+    ) -> SEOMetadata:
+        existing = await self.get_for_entity(entity_type, entity_id)
+        if existing:
+            existing.title = data.title
+            existing.description = data.description
+            existing.canonical_url = data.canonical_url
+            existing.og_title = data.og_title
+            existing.og_description = data.og_description
+            existing.og_image = data.og_image
+            existing.json_ld = data.json_ld
+            existing.no_index = data.no_index
+            existing.no_follow = data.no_follow
+            await self.db.commit()
+            await self.db.refresh(existing)
+            return existing
+        seo = SEOMetadata(
+            entity_type=entity_type,
+            entity_id=entity_id,
             title=data.title,
             description=data.description,
             canonical_url=data.canonical_url,

@@ -1,4 +1,20 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://thesnobgroup.com";
+
+export const metadata: Metadata = {
+  title: "Book an Appointment | Snob Group",
+  description:
+    "Schedule your grooming, tailoring, or consultation appointment with The Snob Group.",
+  openGraph: {
+    title: "Book an Appointment | Snob Group",
+    description:
+      "Schedule your grooming, tailoring, or consultation appointment.",
+    url: `${BASE_URL}/book`,
+  },
+  alternates: { canonical: `${BASE_URL}/book` },
+};
 
 export default function BookPage() {
   return (

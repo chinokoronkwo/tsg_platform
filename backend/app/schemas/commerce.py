@@ -20,6 +20,9 @@ class ProductCreate(BaseModel):
     billing_period: int | None = None
     trial_days: int | None = None
     signup_fee: Decimal | None = None
+    seo_title: str | None = None
+    seo_description: str | None = None
+    og_image_url: str | None = None
 
 
 class ProductUpdate(BaseModel):
@@ -32,6 +35,9 @@ class ProductUpdate(BaseModel):
     stock_quantity: int | None = None
     category_ids: list[int] | None = None
     featured: bool | None = None
+    seo_title: str | None = None
+    seo_description: str | None = None
+    og_image_url: str | None = None
 
 
 class ProductResponse(BaseModel):
@@ -48,6 +54,9 @@ class ProductResponse(BaseModel):
     stock_quantity: int | None
     stock_status: str
     featured: bool
+    seo_title: str | None = None
+    seo_description: str | None = None
+    og_image_url: str | None = None
     created_at: datetime
 
     model_config = {"from_attributes": True}

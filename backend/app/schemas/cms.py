@@ -179,6 +179,7 @@ class SEOMetadataResponse(BaseModel):
     og_title: str | None
     og_description: str | None
     og_image: str | None
+    json_ld: dict | None = None
     no_index: bool
     no_follow: bool
 

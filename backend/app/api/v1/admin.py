@@ -3,7 +3,7 @@
 from datetime import datetime, timezone
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, HTTPException, Request, status, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 from pydantic import BaseModel
@@ -12,6 +12,7 @@ from ...core.database import get_db
 from ...core.config import get_settings
 from ...core.redis import redis_client
 from ...middleware.auth import require_admin
+from ...middleware.audit import log_action, AUDIT_ACTIONS
 from ...models.user import User
 from ...models.commerce import Order, Membership
 from ...models.commerce import OrderStatus
@@ -146,9 +147,20 @@ async def get_settings_route(
 @router.put("/settings")
 async def update_settings(
     body: SettingsUpdate,
+    request: Request,
+    db: AsyncSession = Depends(get_db),
     current_user: User = Depends(require_admin),
 ) -> dict:
     """Update settings (admin only). Placeholder - extend to persist to Redis/DB."""
+    await log_action(
+        db,
+        user_id=current_user.id,
+        action=AUDIT_ACTIONS["settings_change"],
+        resource_type="settings",
+        resource_id=None,
+        details={"key": body.key},
+        request=request,
+    )
     return {
         "message": "Settings update received",
         "key": body.key,
@@ -158,12 +170,22 @@ async def update_settings(
 
 @router.post("/backup")
 async def create_backup(
+    request: Request,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(require_admin),
 ) -> dict:
     """Trigger database backup. Returns status."""
     try:
         await db.execute(select(1))
+        await log_action(
+            db,
+            user_id=current_user.id,
+            action="backup.create",
+            resource_type="database",
+            resource_id=None,
+            details={"trigger": "manual"},
+            request=request,
+        )
         return {
             "status": "ok",
             "message": "Backup trigger placeholder - integrate with pg_dump or backup service",
